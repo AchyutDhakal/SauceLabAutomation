@@ -26,10 +26,35 @@ SIGNUP_EMAIL = (By.XPATH, "//input[@id='email']")
 SIGNUP_PASSWORD = (By.XPATH, "//input[@id='password']")
 SIGNUP_BUTTON = (By.XPATH, "//input[@value='Create']")
 LOG_OUT = (By.XPATH,"//a[normalize-space()='Log Out']")
+SEARCH = (By.XPATH,"//input[@id='search-field']")
+PRODUCT = (By.XPATH,"(//img[@class='product'])[1]")
+ADD_TO_CART_BUTTON = (By.XPATH,"//input[@id='add']")
+CART_ICON = (By.XPATH,"//a[@class='toggle-drawer cart desktop ']")
+CHECKOUT_LINK = (By.XPATH,"//a[@class='checkout']")
+CHECKOUT_BUTTON = (By.ID,"checkout")
+
 
 
 USERNAME = "achyutdhakal006@gmail.com"
 PASSWORD = "Testtest7*"
+
+login_search_data=[
+    {
+        "email":"testautomation066@gmail.com",
+        "password":"Test@1234",
+        "search":"Jacket"
+    }
+    # {
+    #     "email":"achyutdhakal006@gmail.com",
+    #     "password":"Testtest7*",
+    #     "search":"T-Shirt"
+    # },
+    # {
+    #     "email":"randomemail@gmail.com",
+    #     "password":"Random@123",
+    #     "search":"Jeans"
+    # }
+]
 
 
 wait = WebDriverWait(driver, 10)
@@ -65,11 +90,18 @@ def click_login():
     click_element(LOGIN_BUTTON)
     print("Clicked on login button")
 
-def test_login(username, password):
+def test_login(email,password):
+
     click_login_link()
-    enter_username(username)
+    enter_username(email)
     enter_password(password)
     click_login()
+    time.sleep(3)
+    click_element(LOG_OUT)
+    if (EC.element_to_be_clickable(LOG_OUT)):
+        print("Login successful, Log Out link is present.")
+    else:
+        print("Login failed, Log Out link is not present.")
 
 
 def click_signup_link():
@@ -109,17 +141,32 @@ def test_signup():
     enter_password_signup()
     click_signup()
 
+
+def add_to_cart(search_item):
+    click_element(SEARCH)
+    enter_text(SEARCH, search_item)
+    click_element(PRODUCT)
+
+    click_element(ADD_TO_CART_BUTTON)
+    time.sleep(5)
+    # click_element(CART_ICON)
+    click_element(CHECKOUT_LINK)
+    print("Checkout link clicked")
+    click_element(CHECKOUT_BUTTON)
+    print("Checkout button clicked")
+    
+
 # def assert_true(condition, message):
 #     assert condition, message
 
-test_signup()
+# test_signup()
 # assert_true("register" in driver.current_url, "User is not on the signup page")
-test_login(USERNAME, PASSWORD)
-if (EC.element_to_be_clickable(LOG_OUT)):
-    print("Login successful, Log Out link is present.")
-else:
-    print("Login failed, Log Out link is not present.")
+for login_data in login_search_data:
+    print (f"Tested search for {login_data['search']}")
+    add_to_cart(login_data['search'])
+    # test_login(login_data['email'],login_data['password'])
 
-time.sleep(600)
+
+time.sleep(5)
 
 driver.quit()
