@@ -25,6 +25,8 @@ class TestSignup:
     def test_signup(self, valid_data):
         with allure.step("Click signup link"):
             self.login_page.click_signup_link()
+        
+        with allure.step("Signup link click assertion"):
             assert_true("register" in self.driver.current_url, "User is not on the signup page")
 
         with allure.step("Fill out the signup form"):
@@ -35,3 +37,26 @@ class TestSignup:
 
         with allure.step("Click signup button"):
             self.login_page.click_signup_button()
+
+        with allure.step("Signup Assertion"):
+            time.sleep(3)
+            assert_true(self.login_page.is_element_visible(self.login_page.LOG_OUT), "Signup failed as logout is not present on the landing page.")
+
+    @allure.title("Login Test with valid test data")
+    @pytest.mark.parametrize("valid_data",VALID_DATA)
+    def test_valid_login(self, valid_data):
+        with allure.step("Click login link"):
+            self.login_page.click_login_link()
+
+        with allure.step("Login link click assertion"):
+             assert_true("login" in self.driver.current_url, "User is not on the login page")
+        
+        with allure.step("Fill out login form and click login button"):
+            self.login_page.enter_username(valid_data['username'])
+            self.login_page.enter_password(valid_data['password'])
+            self.login_page.click_login()
+
+        with allure.step("Login Assertion"):
+            time.sleep(3)
+            assert_true(self.login_page.is_element_visible(self.login_page.LOG_OUT), "Login failed as logout button is not present")
+
