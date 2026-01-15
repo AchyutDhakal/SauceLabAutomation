@@ -20,24 +20,22 @@ class BasePage():
         return self.wait.until(EC.visibility_of_element_located(locator))
     
     def click_element(self,locator):
-        with allure.step(f"Clicking element with xpath {locator}"):
             try:
                 element = self.find_clickable_element(locator)
                 element.click()
-                self.take_screenshot()
-
             except Exception as e:
-                self.take_screenshot()
+                element_name = locator.split('/'[-1]).replace('"', '').replace("'", "")
+                self.take_screenshot(f"Click_failure_{element_name}")
+                raise e
 
     def enter_text(self,locator, text):
-        with allure.step(f"Enter text using send keys for element with xpath {locator}"):
             try:
                 element = self.find_element(locator)
                 element.clear()
                 element.send_keys(text)
-
             except Exception as e:
-                self.take_screenshot()
+                element_name = locator.split('/'[-1]).replace('"', '').replace("'", "")
+                self.take_screenshot(f"Send_keys_failure_{element_name}")
                 raise e
 
     def is_element_present(self, locator):
@@ -56,9 +54,7 @@ class BasePage():
         except TimeoutException:
             return False
 
-    @allure.step("Take Screenshot")
-    def take_screenshot(self):
-        name = "Screenshot"
+    def take_screenshot(self, name):
         screenshots_dir = "Screenshots"
 
         if not os.path.exists(screenshots_dir):
@@ -74,6 +70,10 @@ class BasePage():
             name=name,
             attachment_type = allure.attachment_type.PNG
         )
+
+    def get_element_text(self, locator):
+        element = self.find_element(locator)
+        return element.text
         
 
 
